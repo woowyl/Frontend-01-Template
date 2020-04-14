@@ -24,5 +24,15 @@
 1. 助教会Review并点评大家的作业。
 2. 你也可以看到其他同学的作业，取长补短。
 
+## 格式
+
+```
+#学号: G20200447010847
+#姓名: 王远亮
+#班级: 3班
+#小组: 
+#作业&总结链接: https://github.com/woowyl/Frontend-01-Template/tree/master/week01
+```
+
 ## 注意事项
  如果对 Git 和 GitHub 不太了解，请参考 [Git 官方文档](https://git-scm.com/book/zh/v2) 或者极客时间的[《玩转 Git 三剑客》](https://time.geekbang.org/course/intro/145)视频课程。
