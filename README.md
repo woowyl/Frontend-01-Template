@@ -29,8 +29,8 @@
 ```
 #学号: G20200447010847
 #姓名: 王远亮
-#班级: 3班
-#小组: 
+#班级: 2班
+#小组: 上海梯队
 #作业&总结链接: https://github.com/woowyl/Frontend-01-Template/tree/master/week01
 ```
 
