@@ -2,8 +2,8 @@ String.prototype.binaryToHex = function() {
     return parseInt(this,2).toString(16)
 }
 
-function UTF8Convert(codePoint) {
-    var binary = codePoint.toString(2);
+function UTF8Convert(char) {
+    var binary =char.codePointAt().toString(2);
     if (codePoint < 128) {
         return binary.padStart(8,"0").binaryToHex()
     } else if(codePoint < 2048) {
