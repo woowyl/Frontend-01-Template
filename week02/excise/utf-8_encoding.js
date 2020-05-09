@@ -3,7 +3,8 @@ String.prototype.binaryToHex = function() {
 }
 
 function UTF8Convert(char) {
-    var binary =char.codePointAt().toString(2);
+    var binary = char.codePointAt().toString(2);
+    var codePoint = char.codePointAt();
     if (codePoint < 128) {
         return binary.padStart(8,"0").binaryToHex()
     } else if(codePoint < 2048) {
