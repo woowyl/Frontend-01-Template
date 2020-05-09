@@ -121,8 +121,10 @@ var objects = [
     JSON,
     Math,
     Reflect];
+
 var deepSet = new Set();
 var uniSet = new Set();
+var antObjList = [];
 
 objects.forEach(o => {
     // 对于 Atomics JSON  Math Reflect 这样的静态对象无法通过o.name拿到 name值
@@ -130,20 +132,26 @@ objects.forEach(o => {
     // 首先将对象名称放入set中
     deepSet.add(objName)
     uniSet.add(o);
-    // 遍历此对象中是否有 并将其放入set中
-    getChildObj(o, objName);
     
+    var curNode = {
+        id: objName,
+        children: []
+    }
+    // 遍历此对象中是否有 并将其放入set中
+    getChildObj(o, objName, curNode.children);
+
+    antObjList.push(curNode)
 });
 
 
-function getChildObj(o, path) {
+function getChildObj(o, path, children) {
     
     for(var p of Object.getOwnPropertyNames(o)) {
         var d = Object.getOwnPropertyDescriptor(o, p)
         
         if (["number", "string", "boolean", "undefined"].indexOf(typeof d.value) > -1) {
-            deepSet.add(path+"."+p);
-            uniSet.add(d.value);
+            //deepSet.add(path+"."+p);
+            //uniSet.add(d.value);
             continue;
         }
     
@@ -151,19 +159,33 @@ function getChildObj(o, path) {
             && !uniSet.has(d.value)) {
             deepSet.add(path+"."+p);
             uniSet.add(d.value);
-            getChildObj(d.value, path+"."+p);
+
+            var curNode = {
+                id: p,
+                children: []
+            }
+            getChildObj(d.value, path+"."+p, curNode.children);
+            children.push(curNode)
         }
         if(d.get && !uniSet.has(d.get)) {
             deepSet.add(path+"."+p);
             uniSet.add(d.get);
-            getChildObj(d.get, path+"."+p);
+            var curNode = {
+                id: p,
+                children: []
+            }
+            getChildObj(d.get, path+"."+p, curNode.children);
+            children.push(curNode)
         }
         if(d.set && !uniSet.has(d.set)) {
             deepSet.add(path+"."+p);
             uniSet.add(d.set);
-            getChildObj(d.set, path+"."+p);
+            var curNode = {
+                id: p,
+                children: []
+            }
+            getChildObj(d.set, path+"."+p, curNode.children);
+            children.push(curNode)
         }
     }
 }
-
-
