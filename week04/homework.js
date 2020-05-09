@@ -60,8 +60,7 @@ for(var i = 0; i < objects.length; i++) {
         if( (d.value !== null && typeof d.value === "object") || (typeof d.value === "function"))
             if(!wideSet.has(d.value))
                 wideSet.add(d.value), objects.push(d.value);
-        if( d.get )  // 为什么get 和 wideSet也算是固有对象？
-        debugger
+        if( d.get )  // 为什么get 和 set也算是固有对象？
             if(!wideSet.has(d.get))
                 wideSet.add(d.get), objects.push(d.get);
         if( d.set )
@@ -73,19 +72,98 @@ for(var i = 0; i < objects.length; i++) {
 
 // 深度优先  拿到新元素后直接放入set
 
+
+var objects = [
+    eval,
+    isFinite,
+    isNaN,
+    parseFloat,
+    parseInt,
+    decodeURI,
+    decodeURIComponent,
+    encodeURI,
+    encodeURIComponent,
+    Array,
+    Date,
+    RegExp,
+    Promise,
+    Proxy,
+    Map,
+    WeakMap,
+    Set,
+    WeakSet,
+    Function,
+    Boolean,
+    String,
+    Number,
+    Symbol,
+    Object,
+    Error,
+    EvalError,
+    RangeError,
+    ReferenceError,
+    SyntaxError,
+    TypeError,
+    URIError,
+    ArrayBuffer,
+    SharedArrayBuffer,
+    DataView,
+    Float32Array,
+    Float64Array,
+    Int8Array,
+    Int16Array,
+    Int32Array,
+    Uint8Array,
+    Uint16Array,
+    Uint32Array,
+    Uint8ClampedArray,
+    Atomics,
+    JSON,
+    Math,
+    Reflect];
 var deepSet = new Set();
+var uniSet = new Set();
 
 objects.forEach(o => {
-    // 首先将对象放入set中
-    deepSet.add(o)
+    // 对于 Atomics JSON  Math Reflect 这样的静态对象无法通过o.name拿到 name值
+    var objName = o.name || o.toString();
+    // 首先将对象名称放入set中
+    deepSet.add(objName)
+    uniSet.add(o);
     // 遍历此对象中是否有 并将其放入set中
-    getChildObj(o);
+    getChildObj(o, objName);
+    
 });
 
 
-function getChildObj(obj) {
-    if( obj.value == null) return;
-
+function getChildObj(o, path) {
+    
+    for(var p of Object.getOwnPropertyNames(o)) {
+        var d = Object.getOwnPropertyDescriptor(o, p)
+        
+        if (["number", "string", "boolean", "undefined"].indexOf(typeof d.value) > -1) {
+            deepSet.add(path+"."+p);
+            uniSet.add(d.value);
+            continue;
+        }
+    
+        if ((d.value !== null && typeof d.value === "object") || (typeof d.value === "function") 
+            && !uniSet.has(d.value)) {
+            deepSet.add(path+"."+p);
+            uniSet.add(d.value);
+            getChildObj(d.value, path+"."+p);
+        }
+        if(d.get && !uniSet.has(d.get)) {
+            deepSet.add(path+"."+p);
+            uniSet.add(d.get);
+            getChildObj(d.get, path+"."+p);
+        }
+        if(d.set && !uniSet.has(d.set)) {
+            deepSet.add(path+"."+p);
+            uniSet.add(d.set);
+            getChildObj(d.set, path+"."+p);
+        }
+    }
 }
 
 
